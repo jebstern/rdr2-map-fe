@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:1234/collectibles';
+const API_URL = process.env.NODE_ENV === "production" ? "https://rdr2-map-be.herokuapp.com/collectibles" : "http://localhost:1234/collectibles";
 
 export default {
   getLocations: () => {
