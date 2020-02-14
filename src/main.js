@@ -5,7 +5,7 @@ import store from './store'
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: process.env.MAP_API_KEY,
+    key: process.env.VUE_APP_MAP_API_KEY,
   },
 })
 
