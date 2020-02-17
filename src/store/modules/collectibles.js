@@ -52,7 +52,7 @@ const actions = {
   },
   async verifyToken ({commit}, token) {
     const response = await api.verifyToken(token);
-     commit(types.SAVE_TOKEN, response.token)
+    commit(types.SAVE_TOKEN, response.token)
   },
   async resetToken ({commit}) {
     console.log('resetToken')

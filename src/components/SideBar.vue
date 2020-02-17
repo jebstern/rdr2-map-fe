@@ -61,7 +61,12 @@ export default {
     }, 1000);
   },
   computed: {
-    ...mapGetters(["getCategories", "getLocations", "getUserLocations", "getHiddenCategories"])
+    ...mapGetters([
+      "getCategories",
+      "getLocations",
+      "getUserLocations",
+      "getHiddenCategories"
+    ])
   },
   methods: {
     handleShowFoundClicked() {
@@ -90,18 +95,20 @@ export default {
       this.$store.dispatch("verifyToken", googleUser.getAuthResponse().id_token);
     },
     googleSignOut() {
+      this.signedIn = false;
       var auth2 = gapi.auth2.getAuthInstance();
       auth2.signOut().then(function () {
         console.log('User signed out.');
       });
       this.$store.dispatch("resetToken");
-      this.signedIn = false;
     },
     onIsSignedInUpdated(isSignedIn) {
       this.signedIn = isSignedIn;
     },
     onGoogleUserUpdated(googleUser) {
-      this.$store.dispatch("verifyToken", googleUser.getAuthResponse().id_token);
+      if (googleUser.getAuthResponse().id_token !== '' && googleUser.getAuthResponse().id_token !== undefined && !this.signedIn) {
+        this.$store.dispatch("verifyToken", googleUser.getAuthResponse().id_token);
+      }
     },
   }
 };
