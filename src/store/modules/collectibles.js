@@ -9,7 +9,8 @@ const state = {
   categories: [],
   groups: [],
   showFound: true,
-  hideCategories: []
+  hideCategories: [],
+  token: ''
 }
 
 const USERNAME = 'Jebe'
@@ -22,6 +23,7 @@ const getters = {
   getLocation: state => state.location,
   showFound: state => state.showFound,
   getHiddenCategories: state => state.hideCategories,
+  getToken: state => state.token,
 }
 
 const actions = {
@@ -29,9 +31,11 @@ const actions = {
     const locations = await api.getLocations()
     commit(types.SAVE_LOCATIONS, locations)
   },
-  async loadUserLocations ({commit}) {
-    const locations = await api.getUserLocations(USERNAME)
-    commit(types.SAVE_USER_LOCATIONS, locations)
+  async loadUserLocations ({commit, state}) {
+    if (state.token !== '') {
+      const locations = await api.getUserLocations(USERNAME, state.token)
+      commit(types.SAVE_USER_LOCATIONS, locations)
+    }
   },
   async loadGroups ({commit}) {
     const groups = await api.getGroups()
@@ -41,14 +45,18 @@ const actions = {
     const categories = await api.getCategories()
     commit(types.SAVE_CATEGORIES, categories)
   },
-  async toggleLocation ({commit, dispatch}, locationId) {
-    await api.toggleLocation(USERNAME, locationId).then(res => res.data.isFound);
-    
-    
-    //commit(types.UPDATE_LOCATION, {id: locationId, isFound})
-    
+  async toggleLocation ({commit, dispatch, state}, locationId) {
+    await api.toggleLocation(USERNAME, locationId, state.token).then(res => res.data.isFound);
     dispatch('loadUserLocations');
     commit(types.SET_LOCATION, locationId)
+  },
+  async verifyToken ({commit}, token) {
+    const response = await api.verifyToken(token);
+     commit(types.SAVE_TOKEN, response.token)
+  },
+  async resetToken ({commit}) {
+    console.log('resetToken')
+    commit(types.SAVE_TOKEN, "")
   },
   async setLocation ({commit}, location) {
     commit(types.SET_LOCATION, location.id)
@@ -73,6 +81,9 @@ const mutations = {
   },
   [types.SAVE_CATEGORIES] (state, categories) {
     state.categories = categories
+  },
+  [types.SAVE_TOKEN] (state, token) {
+    state.token = token
   },
   [types.UPDATE_LOCATION] (state, locationData) {
     const objIndex = state.userLocations.findIndex((obj => obj.id == locationData.id));

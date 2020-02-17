@@ -128,7 +128,8 @@ export default {
       "getUserLocations",
       "getCategories",
       "showFound",
-      "getHiddenCategories"
+      "getHiddenCategories",
+      "getToken"
     ]),
     google: gmapApi
   },
@@ -144,14 +145,12 @@ export default {
       // don't repeat across y-axis (vertically)
       if (y < 0 || y >= tileRange) {
         //y = (y % tileRange + tileRange) % tileRange;
-        //console.log('getNormalizedCoord - return NULL 1');
         //return null;
       }
 
       // repeat across x-axis
       if (x < 0 || x >= tileRange) {
         //x = (x % tileRange + tileRange) % tileRange;
-        //console.log('getNormalizedCoord - return NULL 2');
         //return null;
       }
 
@@ -188,6 +187,9 @@ export default {
       return this.getHiddenCategories.indexOf(categoryId) !== -1;
     },
     showMarker(location) {
+      if (this.getToken === '') {
+        return true;
+      }
 
       const userLocation = _.find(this.getUserLocations, (userLocation) => userLocation.id === location.id)
       const isFound = userLocation != null && userLocation.found
@@ -214,6 +216,10 @@ export default {
       };
     },
     getOpacity(location) {
+      if (this.getToken === '') {
+        return 1.0;
+      }
+
       const userLocation = _.find(this.getUserLocations, (userLocation) => userLocation.id === location.id)
       if (userLocation != null && userLocation.found != null) {
         return userLocation.found ? 0.5 : 1.0;

@@ -76,7 +76,6 @@ export default {
 }
 .popup {
   height: 100%;
-  border: 1px solid black;
   background: wheat;
   text-align: left;
 }
